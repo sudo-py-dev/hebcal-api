@@ -89,13 +89,13 @@ class RangeInfo:
 
 @dataclass
 class HavdalahInfo:
-    time: Optional[str] = None
+    time: Optional[datetime] = None
     memo: Optional[str] = None
 
 
 @dataclass
 class CandleInfo:
-    time: Optional[str] = None
+    time: Optional[datetime] = None
     memo: Optional[str] = None
 
 
@@ -216,7 +216,7 @@ class Event:
         if data.get("category") == "zmanim":
             zmanim_info = ZmanimEvent(
                 title=data.get("title"),
-                date=datetime.fromisoformat(data.get("date")),
+                date=datetime.fromisoformat(data.get("date")) or None,
                 type=EventType.ZMANIM,
                 hebrew=data.get("hebrew"),
                 original_title=data.get("title_orig"),
@@ -228,7 +228,7 @@ class Event:
         havdalah_info = None
         if data.get("category") == "havdalah":
             havdalah_info = HavdalahInfo(
-                time=data.get("date"),
+                time=datetime.fromisoformat(data.get("date")) or None,
                 memo=data.get("memo")
             )
 
@@ -236,7 +236,7 @@ class Event:
         candle_info = None
         if data.get("category") == "candles":
             candle_info = CandleInfo(
-                time=data.get("date"),
+                time=datetime.fromisoformat(data.get("date")) or None,
                 memo=data.get("memo")
             )
 
@@ -500,10 +500,10 @@ class HebrewDateParts:
 @dataclass
 class YahrzeitEvent:
     title: str
-    date: str
-    hebrew: Optional[str]
-    category: str
-    anniversary: Optional[int]
+    date: Optional[datetime] = None
+    hebrew: Optional[str] = None
+    category: str = ""
+    anniversary: Optional[int] = None
     yahrzeitOf: Optional[str] = None
     heDateParts: Optional[HebrewDateParts] = None
 
@@ -511,7 +511,7 @@ class YahrzeitEvent:
     def from_api(data: Dict[str, Any]) -> "YahrzeitEvent":
         return YahrzeitEvent(
             title=data.get("title"),
-            date=data.get("date"),
+            date=datetime.fromisoformat(data.get("date")) or None,
             hebrew=data.get("hebrew"),
             category=data.get("category"),
             anniversary=data.get("anniversary"),
@@ -544,7 +544,7 @@ class ConverterResponse:
     # Extra fields
     hebrew: Optional[str] = None
     events: Optional[List[str]] = None
-    date: Optional[str] = None  # Gregorian ISO string
+    date: Optional[datetime] = None  # Gregorian ISO string
 
     @staticmethod
     def from_api(data: Dict[str, Any]) -> "ConverterResponse":
@@ -557,5 +557,5 @@ class ConverterResponse:
             hd=data.get("hd"),
             hebrew=data.get("hebrew"),
             events=data.get("events"),
-            date=data.get("date"),
+            date=datetime.fromisoformat(data.get("date")) or None,
         )
