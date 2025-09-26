@@ -10,7 +10,7 @@ async def fetch_async(url: str, params: dict = None, timeout: int = 10, headers:
         async with httpx.AsyncClient(timeout=timeout, headers=headers) as client:
             response = await client.get(url, params=params)
             response.raise_for_status()
-            full_url = str(response.url)  # full URL including query parameters
+            full_url = response.url
             logger.debug(f"Fetched {full_url} successfully")
             return response.json()
     except httpx.HTTPStatusError as e:
@@ -32,7 +32,7 @@ def fetch_sync(url: str, params: dict = None, timeout: int = 10, headers: dict =
     try:
         response = requests.get(url, params=params, timeout=timeout, headers=headers)
         response.raise_for_status()
-        full_url = response.url  # full URL including query parameters
+        full_url = response.url
         logger.debug(f"Fetched {full_url} successfully")
         return response.json()
     except requests.HTTPError as e:

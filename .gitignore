@@ -15,6 +15,7 @@ compiler/api/docs.json
 
 # PyCharm stuff
 .idea/
+.pypirc
 
 # VS Code
 .vscode/
