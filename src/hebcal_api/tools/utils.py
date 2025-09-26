@@ -1,6 +1,6 @@
 import httpx
 import requests
-from .exception import FetchError
+from .exception import FetchError, InvalidGeoLocationError
 from .logger import logger
 import re
 
@@ -17,6 +17,8 @@ async def fetch_async(url: str, params: dict = None, timeout: int = 10, headers:
         if e.response.status_code == 404:
             try:
                 error_message = e.response.json().get("error", "Unknown error")
+                if error_message and "can't find geonameid" in error_message:
+                    raise InvalidGeoLocationError(error_message)
             except ValueError:
                 error_message = "Unknown error"
             logger.error(f"HTTP status error fetching {full_url}: {e.response.status_code} - {error_message}")
@@ -40,6 +42,8 @@ def fetch_sync(url: str, params: dict = None, timeout: int = 10, headers: dict =
         if e.response.status_code == 404:
             try:
                 error_message = e.response.json().get("error", "Unknown error")
+                if error_message and"can't find geonameid" in error_message:
+                    raise InvalidGeoLocationError(error_message)
             except ValueError:
                 error_message = "Unknown error"
             logger.error(f"HTTP status error fetching {full_url}: {e.response.status_code} - {error_message}")

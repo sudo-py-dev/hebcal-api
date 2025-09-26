@@ -5,3 +5,9 @@ class FetchError(Exception):
 class ParseError(Exception):
     """Custom exception for parse errors in hebcal_api."""
     pass
+
+
+class InvalidGeoLocationError(Exception):
+    """Custom exception for invalid geo location errors in hebcal_api."""
+    pass
+    
