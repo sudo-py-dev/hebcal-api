@@ -17,7 +17,7 @@ class Zmanim:
 
     def set_param(self, key: str, value: Any) -> "Zmanim":
         if key not in _ALLOWED_PARAMS:
-            raise ValueError(f"Invalid parameter: '{key}'. Must be one of {sorted(self.ALLOWED_PARAMS)}")
+            raise ValueError(f"Invalid parameter: '{key}'. Must be one of {sorted(_ALLOWED_PARAMS)}")
         if value is None:
             self.params.pop(key, None)
         else:
@@ -29,7 +29,7 @@ class Zmanim:
         if extra:
             for k, v in extra.items():
                 if k not in _ALLOWED_PARAMS:
-                    raise ValueError(f"Invalid extra parameter: '{k}'. Must be one of {sorted(self.ALLOWED_PARAMS)}")
+                    raise ValueError(f"Invalid extra parameter: '{k}'. Must be one of {sorted(_ALLOWED_PARAMS)}")
                 merged[k] = v
         return merged
 
@@ -59,6 +59,7 @@ class Zmanim:
 
         if date:
             params["date"] = self._format_datetime(date)
+            return params
         else:
             if not start or not end:
                 raise ValueError("You must provide either a single 'date' or both 'start' and 'end'")

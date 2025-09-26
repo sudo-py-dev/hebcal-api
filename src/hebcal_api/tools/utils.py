@@ -14,6 +14,7 @@ async def fetch_async(url: str, params: dict = None, timeout: int = 10, headers:
             logger.debug(f"Fetched {full_url} successfully")
             return response.json()
     except httpx.HTTPStatusError as e:
+        full_url = getattr(e.response, 'url', url) if e.response else url
         if e.response.status_code == 404:
             try:
                 error_message = e.response.json().get("error", "Unknown error")
@@ -38,8 +39,8 @@ def fetch_sync(url: str, params: dict = None, timeout: int = 10, headers: dict =
         logger.debug(f"Fetched {full_url} successfully")
         return response.json()
     except requests.HTTPError as e:
-        full_url = e.request.url
-        if e.response.status_code == 404:
+        full_url = getattr(e.request, 'url', url) if e.request else url
+        if e.response and e.response.status_code == 404:
             try:
                 error_message = e.response.json().get("error", "Unknown error")
                 if error_message and"can't find geonameid" in error_message:
@@ -48,8 +49,8 @@ def fetch_sync(url: str, params: dict = None, timeout: int = 10, headers: dict =
                 error_message = "Unknown error"
             logger.error(f"HTTP status error fetching {full_url}: {e.response.status_code} - {error_message}")
             raise FetchError(f"HTTP status error fetching {full_url}: {e.response.status_code} - {error_message}") from e
-        logger.error(f"HTTP status error fetching {full_url}: {e.response.status_code}")
-        raise FetchError(f"HTTP status error fetching {full_url}: {e.response.status_code}") from e
+        logger.error(f"HTTP status error fetching {full_url}: {e.response.status_code if e.response else 'Unknown'}")
+        raise FetchError(f"HTTP status error fetching {full_url}: {e.response.status_code if e.response else 'Unknown'}") from e
     except (requests.RequestException, requests.ConnectionError, requests.ConnectTimeout) as e:
         logger.error(f"Request error fetching {url}: {e}")
         raise FetchError(f"Request error fetching {url}: {e}")

@@ -83,11 +83,11 @@ class Yahrzeit:
     def get_yahrzeit(self, extra: Optional[Dict[str, Any]] = None) -> YahrzeitResponse:
         params = self._merge_params(extra)
         logger.debug(f"Fetching Yahrzeit from {self.endpoint} with params {params}")
-        data = fetch_sync(self.endpoint, params=params, method="POST", form_encoded=True)
+        data = fetch_sync(self.endpoint, params=params)
         return YahrzeitResponse.from_api(data)
 
     async def get_yahrzeit_async(self, extra: Optional[Dict[str, Any]] = None) -> YahrzeitResponse:
         params = self._merge_params(extra)
         logger.debug(f"Fetching async Yahrzeit from {self.endpoint} with params {params}")
-        data = await fetch_async(self.endpoint, params=params, method="POST", form_encoded=True)
+        data = await fetch_async(self.endpoint, params=params)
         return YahrzeitResponse.from_api(data)

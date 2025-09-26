@@ -216,7 +216,8 @@ class Calendar:
             return dt.strftime("%Y-%m-%d")
         elif isinstance(dt, str):
             try:
-                return datetime.strptime(dt, "%Y-%m-%d")
+                datetime.strptime(dt, "%Y-%m-%d")  # validation only
+                return dt
             except ValueError:
                 raise ValueError("Invalid datetime format '%Y-%m-%d' for parameter 'start' or 'end'")
         else:
@@ -227,26 +228,26 @@ class Calendar:
         start: Optional[Union[str, datetime]] = None,
         end: Optional[Union[str, datetime]] = None,
         year: Optional[Union[str, int]] = None,
-        yt: Optional[str] = None,
+        year_type: Optional[str] = None,
         month: Optional[Union[int, str]] = None,
-        ny: Optional[int] = None,
+        number_of_years: Optional[int] = None,
     ) -> Dict[str, Any]:
         if year is not None and (start or end):
             raise ValueError("Cannot specify both 'year' and 'start/end'. Choose one method.")
         if year is not None:
             params = {"year": year}
-            if yt:
-                if yt not in ("G", "H"):
+            if year_type:
+                if year_type not in ("G", "H"):
                     raise ValueError("yt must be 'G' or 'H'")
-                params["yt"] = yt
+                params["yt"] = year_type
             if month:
                 if month != "x" and not (1 <= int(month) <= 12):
                     raise ValueError("month must be 'x' or 1-12")
                 params["month"] = month
-            if ny is not None:
-                if ny < 1:
+            if number_of_years is not None:
+                if number_of_years < 1:
                     raise ValueError("ny must be >= 1")
-                params["ny"] = ny
+                params["ny"] = number_of_years
             return params
         elif start and end:
             return {"start": self._format_datetime(start), "end": self._format_datetime(end)}
@@ -260,8 +261,8 @@ class Calendar:
         zip_code: Optional[str] = None,
         latitude: Optional[float] = None,
         longitude: Optional[float] = None,
-        tzid: Optional[str] = None,
-        city: Optional[str] = None
+        timezone_id: Optional[str] = None,
+        city_name: Optional[str] = None
     ) -> Dict[str, Any]:
         provided = []
         if geonameid is not None:
@@ -272,11 +273,11 @@ class Calendar:
             if not (isinstance(zip_code, str) and zip_code.isdigit() and len(zip_code) == 5):
                 raise ValueError("zip must be a 5-digit string")
             provided.append("zip")
-        if any([latitude, longitude, tzid]):
-            if latitude is None or longitude is None or tzid is None:
+        if any([latitude, longitude, timezone_id]):
+            if latitude is None or longitude is None or timezone_id is None:
                 raise ValueError("latitude, longitude, and tzid must all be provided together")
             provided.append("latlon")
-        if city is not None:
+        if city_name is not None:
             provided.append("city")
         if len(provided) == 0:
             raise ValueError("You must provide one location parameter")
@@ -287,9 +288,9 @@ class Calendar:
         if zip_code is not None:
             return {"zip": zip_code}
         if latitude is not None:
-            return {"latitude": latitude, "longitude": longitude, "tzid": tzid}
-        if city is not None:
-            return {"city": city}
+            return {"latitude": latitude, "longitude": longitude, "tzid": timezone_id}
+        if city_name is not None:
+            return {"city": city_name}
 
     # ----------------------------
     # Main event function

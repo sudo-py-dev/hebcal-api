@@ -18,7 +18,7 @@ class Leyning:
         if extra:
             for k, v in extra.items():
                 if k not in _ALLOWED_PARAMS:
-                    raise ValueError(f"Invalid extra parameter: '{k}'. Must be one of {sorted(self.ALLOWED_PARAMS)}")
+                    raise ValueError(f"Invalid extra parameter: '{k}'. Must be one of {sorted(_ALLOWED_PARAMS)}")
                 merged[k] = v
         return merged
 
@@ -27,7 +27,8 @@ class Leyning:
             return dt.strftime("%Y-%m-%d")
         elif isinstance(dt, str):
             try:
-                return datetime.strptime(dt, "%Y-%m-%d")
+                datetime.strptime(dt, "%Y-%m-%d")  # validation only
+                return dt
             except ValueError:
                 raise ValueError("Invalid datetime format '%Y-%m-%d' for parameter 'start' or 'end'")
         else:
@@ -35,9 +36,9 @@ class Leyning:
 
     def _validate_dates(
         self,
-        date: Optional[str],
-        start: Optional[str],
-        end: Optional[str]
+        date: Optional[Union[str, datetime, date]],
+        start: Optional[Union[str, datetime, date]],
+        end: Optional[Union[str, datetime, date]]
     ) -> Dict[str, str]:
         params: Dict[str, str] = {}
         if date:
@@ -47,7 +48,7 @@ class Leyning:
                 raise ValueError("You must provide either a single 'date' or both 'start' and 'end'")
             start_dt = self._format_datetime(start)
             end_dt = self._format_datetime(end)
-            if (end_dt - start_dt).days > 180:
+            if (datetime.strptime(end_dt, "%Y-%m-%d") - datetime.strptime(start_dt, "%Y-%m-%d")).days > 180:
                 logger.warning("Date range > 180 days. Results will be truncated by the API.")
             params["start"] = start_dt
             params["end"] = end_dt
@@ -55,9 +56,9 @@ class Leyning:
 
     def _prepare_params(
         self,
-        date: Optional[str],
-        start: Optional[str],
-        end: Optional[str],
+        date: Optional[Union[str, datetime, date]],
+        start: Optional[Union[str, datetime, date]],
+        end: Optional[Union[str, datetime, date]],
         diaspora: Optional[bool] = False,
         triennial: Optional[bool] = True
     ) -> Dict[str, Any]:
@@ -68,9 +69,9 @@ class Leyning:
 
     def get_leyning(
         self,
-        date: Optional[str] = None,
-        start: Optional[str] = None,
-        end: Optional[str] = None,
+        date: Optional[Union[str, datetime, date]] = None,
+        start: Optional[Union[str, datetime, date]] = None,
+        end: Optional[Union[str, datetime, date]] = None,
         diaspora: Optional[bool] = False,
         triennial: Optional[bool] = True
     ) -> LeyningResponse:

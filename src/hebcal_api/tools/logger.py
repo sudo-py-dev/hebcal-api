@@ -30,3 +30,6 @@ def set_level(level: str):
         raise ValueError(f"Invalid log level: {level}")
     logger.setLevel(numeric_level)
     _ch.setLevel(numeric_level)
+    # Update all handlers to maintain consistency
+    for handler in logger.handlers:
+        handler.setLevel(numeric_level)

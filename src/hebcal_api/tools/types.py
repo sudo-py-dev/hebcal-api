@@ -509,9 +509,17 @@ class YahrzeitEvent:
 
     @staticmethod
     def from_api(data: Dict[str, Any]) -> "YahrzeitEvent":
+        date_str = data.get("date")
+        parsed_date = None
+        if date_str:
+            try:
+                parsed_date = datetime.fromisoformat(date_str)
+            except (ValueError, TypeError):
+                parsed_date = None
+
         return YahrzeitEvent(
             title=data.get("title"),
-            date=datetime.fromisoformat(data.get("date")) or None,
+            date=parsed_date,
             hebrew=data.get("hebrew"),
             category=data.get("category"),
             anniversary=data.get("anniversary"),
@@ -548,6 +556,14 @@ class ConverterResponse:
 
     @staticmethod
     def from_api(data: Dict[str, Any]) -> "ConverterResponse":
+        date_str = data.get("date")
+        parsed_date = None
+        if date_str:
+            try:
+                parsed_date = datetime.fromisoformat(date_str)
+            except (ValueError, TypeError):
+                parsed_date = None
+
         return ConverterResponse(
             gy=data.get("gy"),
             gm=data.get("gm"),
@@ -557,5 +573,5 @@ class ConverterResponse:
             hd=data.get("hd"),
             hebrew=data.get("hebrew"),
             events=data.get("events"),
-            date=datetime.fromisoformat(data.get("date")) or None,
+            date=parsed_date,
         )
