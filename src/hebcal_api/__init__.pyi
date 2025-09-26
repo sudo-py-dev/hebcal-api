@@ -1,0 +1,132 @@
+"""
+Type stub file for hebcal_api to improve IDE autocompletion
+"""
+from typing import Optional, Dict, Any, Union
+from datetime import date, datetime
+from .tools.types import CalendarResponse
+
+class Calendar:
+    def __init__(self) -> None: ...
+    def get_events(
+        self,
+        start: Optional[Union[str, datetime]] = None,
+        end: Optional[Union[str, datetime]] = None,
+        year: Optional[Union[str, int]] = None,
+        year_type: Optional[str] = None,
+        month: Optional[Union[int, str]] = None,
+        number_of_years: Optional[int] = None,
+        geonameid: Optional[int] = None,
+        zip_code: Optional[str] = None,
+        latitude: Optional[float] = None,
+        longitude: Optional[float] = None,
+        timezone_id: Optional[str] = None,
+        city_name: Optional[str] = None,
+        israel_holidays_and_torah_readings: Optional[bool] = None,
+        major_holidays: bool = False,
+        yom_tov_only: bool = False,
+        minor_holidays: bool = False,
+        rosh_chodesh: bool = False,
+        minor_fasts: bool = False,
+        special_shabbatot: bool = False,
+        modern_holidays: bool = False,
+        weekly_torah_portion: bool = False,
+        include_leyning: bool = False,
+        hebrew_date_for_events: bool = False,
+        hebrew_date_for_range: bool = False,
+        omer_days: bool = False,
+        yom_kippur_katan: bool = False,
+        molad_dates: bool = False,
+        yizkor_dates: bool = False,
+        shabbat_mevarchim: bool = False,
+        candle_lighting_times: bool = False,
+        candle_lighting_minutes_before_sunset: Optional[int] = None,
+        havdalah_minutes_after_sunset: Optional[int] = None,
+        havdalah_at_nightfall: bool = False,
+        daf_yomi: bool = False,
+        daf_a_week: bool = False,
+        yerushalmi_yomi_vilna: bool = False,
+        yerushalmi_yomi_schottenstein: bool = False,
+        mishna_yomi: bool = False,
+        nach_yomi: bool = False,
+        tanakh_yomi: bool = False,
+        daily_tehillim: bool = False,
+        daily_rambam_1_chapter: bool = False,
+        daily_rambam_3_chapters: bool = False,
+        sefer_ha_mitzvot: bool = False,
+        kitzur_shulchan_arukh_yomi: bool = False,
+        arukh_ha_shulchan_yomi: bool = False,
+        sefer_chofetz_chaim: bool = False,
+        shemirat_ha_lashon: bool = False,
+        pirkei_avot_shabbatot: bool = False,
+        holiday_description_only: bool = False,
+        language: Optional[str] = None
+    ) -> CalendarResponse: ...
+    async def get_events_async(
+        self,
+        start: Optional[Union[str, datetime]] = None,
+        end: Optional[Union[str, datetime]] = None,
+        year: Optional[Union[str, int]] = None,
+        year_type: Optional[str] = None,
+        month: Optional[Union[int, str]] = None,
+        number_of_years: Optional[int] = None,
+        geonameid: Optional[int] = None,
+        zip_code: Optional[str] = None,
+        latitude: Optional[float] = None,
+        longitude: Optional[float] = None,
+        timezone_id: Optional[str] = None,
+        city_name: Optional[str] = None,
+        israel_holidays_and_torah_readings: Optional[bool] = None,
+        major_holidays: bool = False,
+        yom_tov_only: bool = False,
+        minor_holidays: bool = False,
+        rosh_chodesh: bool = False,
+        minor_fasts: bool = False,
+        special_shabbatot: bool = False,
+        modern_holidays: bool = False,
+        weekly_torah_portion: bool = False,
+        include_leyning: bool = False,
+        hebrew_date_for_events: bool = False,
+        hebrew_date_for_range: bool = False,
+        omer_days: bool = False,
+        yom_kippur_katan: bool = False,
+        molad_dates: bool = False,
+        yizkor_dates: bool = False,
+        shabbat_mevarchim: bool = False,
+        candle_lighting_times: bool = False,
+        candle_lighting_minutes_before_sunset: Optional[int] = None,
+        havdalah_minutes_after_sunset: Optional[int] = None,
+        havdalah_at_nightfall: bool = False,
+        daf_yomi: bool = False,
+        daf_a_week: bool = False,
+        yerushalmi_yomi_vilna: bool = False,
+        yerushalmi_yomi_schottenstein: bool = False,
+        mishna_yomi: bool = False,
+        nach_yomi: bool = False,
+        tanakh_yomi: bool = False,
+        daily_tehillim: bool = False,
+        daily_rambam_1_chapter: bool = False,
+        daily_rambam_3_chapters: bool = False,
+        sefer_ha_mitzvot: bool = False,
+        kitzur_shulchan_arukh_yomi: bool = False,
+        arukh_ha_shulchan_yomi: bool = False,
+        sefer_chofetz_chaim: bool = False,
+        shemirat_ha_lashon: bool = False,
+        pirkei_avot_shabbatot: bool = False,
+        holiday_description_only: bool = False,
+        language: Optional[str] = None
+    ) -> CalendarResponse: ...
+
+def get_holidays(
+    year: int,
+    location: Optional[str] = None,
+    major_only: bool = False
+) -> CalendarResponse: ...
+
+def get_shabbat_times(
+    start_date: Union[str, date, datetime],
+    end_date: Union[str, date, datetime],
+    location: str,
+    candle_lighting: bool = True
+) -> CalendarResponse: ...
+
+def get_daf_yomi(date: Optional[Union[str, date, datetime]] = None) -> CalendarResponse: ...
