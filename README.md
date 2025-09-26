@@ -2,7 +2,7 @@
 
 [![PyPI version](https://badge.fury.io/py/hebcal-api.svg)](https://badge.fury.io/py/hebcal-api)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/sudo-py-dev/hebcal-api/blob/main/LICENSE)
 
 A comprehensive, async-first Python client for the [Hebcal Jewish Calendar API](https://www.hebcal.com/home/195/jewish-calendar-rest-api). This library provides easy access to Jewish calendar events, Shabbat times, Torah readings, and more.
 
