@@ -112,15 +112,17 @@ class TestYahrzeit:
 
     def test_get_yahrzeit_success(self, yahrzeit):
         """Test get_yahrzeit with successful response."""
-        mock_data = [
-            {
-                "title": "Yahrzeit of John Doe",
-                "date": "2024-01-15T12:00:00Z",
-                "hebrew": "כ\"ה בטבת תשפ\"ד",
-                "category": "yahrzeit",
-                "heDateParts": {"yy": 5784, "mm": 10, "dd": 25, "month_name": "Tevet"}
-            }
-        ]
+        mock_data = {
+            "events": [
+                {
+                    "title": "Yahrzeit of John Doe",
+                    "date": "2024-01-15T12:00:00Z",
+                    "hebrew": "כ\"ה בטבת תשפ\"ד",
+                    "category": "yahrzeit",
+                    "heDateParts": {"yy": 5784, "mm": 10, "dd": 25, "month_name": "Tevet"}
+                }
+            ]
+        }
         mock_response = MagicMock()
         mock_response.json.return_value = mock_data
         mock_response.raise_for_status = MagicMock()
@@ -136,15 +138,17 @@ class TestYahrzeit:
         """Test get_yahrzeit with added event."""
         yahrzeit.add_event(1, 2020, 1, 15, event_type="Yahrzeit", name="John Doe")
 
-        mock_data = [
-            {
-                "title": "Yahrzeit of John Doe",
-                "date": "2024-01-15T12:00:00Z",
-                "hebrew": "כ\"ה בטבת תשפ\"ד",
-                "category": "yahrzeit",
-                "heDateParts": {"yy": 5784, "mm": 10, "dd": 25, "month_name": "Tevet"}
-            }
-        ]
+        mock_data = {
+            "events": [
+                {
+                    "title": "Yahrzeit of John Doe",
+                    "date": "2024-01-15T12:00:00Z",
+                    "hebrew": "כ\"ה בטבת תשפ\"ד",
+                    "category": "yahrzeit",
+                    "heDateParts": {"yy": 5784, "mm": 10, "dd": 25, "month_name": "Tevet"}
+                }
+            ]
+        }
         mock_response = MagicMock()
         mock_response.json.return_value = mock_data
         mock_response.raise_for_status = MagicMock()
@@ -158,7 +162,7 @@ class TestYahrzeit:
     def test_get_yahrzeit_with_extra_params(self, yahrzeit):
         """Test get_yahrzeit with extra parameters."""
         extra = {"years": 5, "i": "on"}
-        mock_data = []
+        mock_data = {"events": []}
         mock_response = MagicMock()
         mock_response.json.return_value = mock_data
         mock_response.raise_for_status = MagicMock()
@@ -173,15 +177,17 @@ class TestYahrzeit:
     @pytest.mark.asyncio
     async def test_get_yahrzeit_async_success(self, yahrzeit):
         """Test get_yahrzeit_async with successful response."""
-        mock_data = [
-            {
-                "title": "Yahrzeit of John Doe",
-                "date": "2024-01-15T12:00:00Z",
-                "hebrew": "כ\"ה בטבת תשפ\"ד",
-                "category": "yahrzeit",
-                "heDateParts": {"yy": 5784, "mm": 10, "dd": 25, "month_name": "Tevet"}
-            }
-        ]
+        mock_data = {
+            "events": [
+                {
+                    "title": "Yahrzeit of John Doe",
+                    "date": "2024-01-15T12:00:00Z",
+                    "hebrew": "כ\"ה בטבת תשפ\"ד",
+                    "category": "yahrzeit",
+                    "heDateParts": {"yy": 5784, "mm": 10, "dd": 25, "month_name": "Tevet"}
+                }
+            ]
+        }
         mock_response = MagicMock()
         mock_response.json.return_value = mock_data
         mock_response.raise_for_status = MagicMock()

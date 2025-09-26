@@ -119,7 +119,7 @@ class Leyning:
         params = self._prepare_params(date, start, end, diaspora, triennial)
         logger.debug(f"Fetching Leyning from {self.base_url} with params {params}")
         data = fetch_sync(self.base_url, params=params)
-        return LeyningResponse.from_dict(data)
+        return LeyningResponse.from_dict(data, url=self.base_url, params=params)
 
     async def get_leyning_async(
         self,
@@ -173,4 +173,4 @@ class Leyning:
         params = self._prepare_params(date, start, end, diaspora, triennial)
         logger.debug(f"Fetching async Leyning from {self.base_url} with params {params}")
         data = await fetch_async(self.base_url, params=params)
-        return LeyningResponse.from_dict(data)
+        return LeyningResponse.from_dict(data, url=self.base_url, params=params)

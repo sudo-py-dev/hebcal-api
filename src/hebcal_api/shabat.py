@@ -157,7 +157,7 @@ class Shabat:
             language=language
         )
         logger.debug(f"Fetching Shabbat times from {self.endpoint} with params {params}")
-        return CalendarResponse(fetch_sync(self.endpoint, params=params))
+        return CalendarResponse(fetch_sync(self.endpoint, params=params), url=self.endpoint, params=params)
 
 
     async def get_shabbat_async(
@@ -218,4 +218,4 @@ class Shabat:
             language=language
         )
         logger.debug(f"Fetching async Shabbat times from {self.endpoint} with params {params}")
-        return CalendarResponse(await fetch_async(self.endpoint, params=params))
+        return CalendarResponse(await fetch_async(self.endpoint, params=params), url=self.endpoint, params=params)

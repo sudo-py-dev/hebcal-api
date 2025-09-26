@@ -136,7 +136,7 @@ class Zmanim:
         params = self._prepare_params(date, start, end, geonameid, latitude, longitude, sec, elevation)
         logger.debug(f"Fetching Zmanim from {self.endpoint} with params {params}")
         data = fetch_sync(self.endpoint, params=params)
-        return ZmanimResponse.from_api(data)
+        return ZmanimResponse.from_api(data, url=self.endpoint, params=params)
 
     async def get_zmanim_async(
         self,
@@ -171,4 +171,4 @@ class Zmanim:
         params = self._prepare_params(date, start, end, geonameid, latitude, longitude, sec, elevation)
         logger.debug(f"Fetching async Zmanim from {self.endpoint} with params {params}")
         data = await fetch_async(self.endpoint, params=params)
-        return ZmanimResponse.from_api(data)
+        return ZmanimResponse.from_api(data, url=self.endpoint, params=params)

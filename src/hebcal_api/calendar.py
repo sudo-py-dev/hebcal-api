@@ -178,7 +178,7 @@ class Calendar:
             logger.error(f"Unexpected response format: {type(response_data)}")
             raise ValueError("Invalid response data format from Hebcal API")
 
-        return CalendarResponse(response_data)
+        return CalendarResponse(response_data, url=self.endpoint, params=params)
 
     async def _get_calendar_async(self, extra_params: Optional[Dict[str, Any]] = None) -> CalendarResponse:
         """
@@ -209,7 +209,7 @@ class Calendar:
             logger.error(f"Unexpected response format: {type(response_data)}")
             raise ValueError("Invalid response data format from Hebcal API")
 
-        return CalendarResponse(response_data)
+        return CalendarResponse(response_data, url=self.endpoint, params=params)
 
     def _format_datetime(self, dt: Union[str, datetime, date]) -> str:
         if isinstance(dt, datetime) or isinstance(dt, date):

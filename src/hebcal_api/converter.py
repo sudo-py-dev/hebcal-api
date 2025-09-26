@@ -82,7 +82,7 @@ class Converter:
             params["gs"] = "on"
         logger.debug(f"Fetching g2h (single) from {self.endpoint} with params {params}")
         data = fetch_sync(self.endpoint, params=params)
-        return ConverterResponse.from_api(data)
+        return ConverterResponse.from_api(data, url=self.endpoint, params=params)
 
     async def g2h_single_async(
         self,
@@ -112,7 +112,7 @@ class Converter:
             params["gs"] = "on"
         logger.debug(f"Fetching async g2h (single) from {self.endpoint} with params {params}")
         data = await fetch_async(self.endpoint, params=params)
-        return ConverterResponse.from_api(data)
+        return ConverterResponse.from_api(data, url=self.endpoint, params=params)
 
     def g2h_range(
         self,
@@ -136,7 +136,7 @@ class Converter:
         })
         logger.debug(f"Fetching g2h (range) from {self.endpoint} with params {params}")
         data = fetch_sync(self.endpoint, params=params)
-        return [ConverterResponse.from_api(item) for item in data]
+        return [ConverterResponse.from_api(item, url=self.endpoint, params=params) for item in data]
 
     # ----------------------
     # Hebrew → Gregorian
@@ -170,7 +170,7 @@ class Converter:
         })
         logger.debug(f"Fetching h2g (single) from {self.endpoint} with params {params}")
         data = fetch_sync(self.endpoint, params=params)
-        return ConverterResponse.from_api(data)
+        return ConverterResponse.from_api(data, url=self.endpoint, params=params)
 
     async def h2g_single_async(
         self,
@@ -202,7 +202,7 @@ class Converter:
         })
         logger.debug(f"Fetching async h2g (single) from {self.endpoint} with params {params}")
         data = await fetch_async(self.endpoint, params=params)
-        return ConverterResponse.from_api(data)
+        return ConverterResponse.from_api(data, url=self.endpoint, params=params)
 
     def h2g_range(
         self,
@@ -240,4 +240,4 @@ class Converter:
         })
         logger.debug(f"Fetching h2g (range) from {self.endpoint} with params {params}")
         data = fetch_sync(self.endpoint, params=params)
-        return [ConverterResponse.from_api(item) for item in data]
+        return [ConverterResponse.from_api(item, url=self.endpoint, params=params) for item in data]

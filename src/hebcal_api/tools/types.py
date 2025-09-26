@@ -298,8 +298,10 @@ class Event:
 
 
 class CalendarResponse:
-    def __init__(self, data: Dict[str, Any]):
+    def __init__(self, data: Dict[str, Any], url: Optional[str] = None, params: Optional[Dict[str, Any]] = None):
         self._data = data
+        self._url = url
+        self._params = params
 
     @property
     def title(self) -> str:
@@ -347,6 +349,14 @@ class CalendarResponse:
     @property
     def raw(self) -> Dict[str, Any]:
         return self._data
+
+    @property
+    def query(self) -> Optional[str]:
+        if self._url and self._params:
+            from urllib.parse import urlencode
+            param_str = urlencode(self._params)
+            return f"{self._url}?{param_str}"
+        return None
 
 
 @dataclass
@@ -412,16 +422,34 @@ class LeyningResponse:
     range_start: str
     range_end: str
     items: List[LeyningItem]
+    _data: Optional[Dict[str, Any]] = None  # Store raw data
+    _url: Optional[str] = None  # Store query URL
+    _params: Optional[Dict[str, Any]] = None  # Store query params
 
     @staticmethod
-    def from_dict(data: Dict[str, Any]) -> "LeyningResponse":
+    def from_dict(data: Dict[str, Any], url: Optional[str] = None, params: Optional[Dict[str, Any]] = None) -> "LeyningResponse":
         return LeyningResponse(
             date=datetime.fromisoformat(data["date"]),
             location=data.get("location", ""),
             range_start=data.get("range", {}).get("start", ""),
             range_end=data.get("range", {}).get("end", ""),
-            items=[LeyningItem.from_dict(item) for item in data.get("items", [])]
+            items=[LeyningItem.from_dict(item) for item in data.get("items", [])],
+            _data=data,
+            _url=url,
+            _params=params
         )
+
+    @property
+    def raw(self) -> Dict[str, Any]:
+        return self._data or {}
+
+    @property
+    def query(self) -> Optional[str]:
+        if self._url and self._params:
+            from urllib.parse import urlencode
+            param_str = urlencode(self._params)
+            return f"{self._url}?{param_str}"
+        return None
 
 
 @dataclass
@@ -468,16 +496,34 @@ class ZmanimResponse:
     version: str
     location: Any
     times: ZmanimTimes
+    _data: Optional[Dict[str, Any]] = None  # Store raw data
+    _url: Optional[str] = None  # Store query URL
+    _params: Optional[Dict[str, Any]] = None  # Store query params
 
     @classmethod
-    def from_api(cls, data: Dict[str, Any]) -> "ZmanimResponse":
+    def from_api(cls, data: Dict[str, Any], url: Optional[str] = None, params: Optional[Dict[str, Any]] = None) -> "ZmanimResponse":
         times_obj = ZmanimTimes.from_dict(data.get("times", {}))
         return cls(
             date=data["date"],
             version=data["version"],
             location=data["location"],
-            times=times_obj
+            times=times_obj,
+            _data=data,
+            _url=url,
+            _params=params
         )
+
+    @property
+    def raw(self) -> Dict[str, Any]:
+        return self._data or {}
+
+    @property
+    def query(self) -> Optional[str]:
+        if self._url and self._params:
+            from urllib.parse import urlencode
+            param_str = urlencode(self._params)
+            return f"{self._url}?{param_str}"
+        return None
 
 
 @dataclass
@@ -531,12 +577,40 @@ class YahrzeitEvent:
 @dataclass
 class YahrzeitResponse:
     events: List[YahrzeitEvent]
+    _data: Optional[Dict[str, Any]] = None  # Store raw data
+    _url: Optional[str] = None  # Store query URL
+    _params: Optional[Dict[str, Any]] = None  # Store query params
 
     @staticmethod
-    def from_api(data: List[Dict[str, Any]]) -> "YahrzeitResponse":
+    def from_api(data: Dict[str, Any], url: Optional[str] = None, params: Optional[Dict[str, Any]] = None) -> "YahrzeitResponse":
+        # The API returns a dict with 'events' key containing the list
+        events_data = data.get("events", [])
+        if isinstance(events_data, str):
+            # If events is a string, try to parse it as JSON
+            import json
+            try:
+                events_data = json.loads(events_data)
+            except:
+                events_data = []
+        
         return YahrzeitResponse(
-            events=[YahrzeitEvent.from_api(item) for item in data]
+            events=[YahrzeitEvent.from_api(item) for item in events_data],
+            _data=data,
+            _url=url,
+            _params=params
         )
+
+    @property
+    def raw(self) -> Dict[str, Any]:
+        return self._data or {}
+
+    @property
+    def query(self) -> Optional[str]:
+        if self._url and self._params:
+            from urllib.parse import urlencode
+            param_str = urlencode(self._params)
+            return f"{self._url}?{param_str}"
+        return None
 
 
 @dataclass
@@ -553,9 +627,12 @@ class ConverterResponse:
     hebrew: Optional[str] = None
     events: Optional[List[str]] = None
     date: Optional[datetime] = None  # Gregorian ISO string
+    _data: Optional[Dict[str, Any]] = None  # Store raw data
+    _url: Optional[str] = None  # Store query URL
+    _params: Optional[Dict[str, Any]] = None  # Store query params
 
     @staticmethod
-    def from_api(data: Dict[str, Any]) -> "ConverterResponse":
+    def from_api(data: Dict[str, Any], url: Optional[str] = None, params: Optional[Dict[str, Any]] = None) -> "ConverterResponse":
         date_str = data.get("date")
         parsed_date = None
         if date_str:
@@ -574,4 +651,19 @@ class ConverterResponse:
             hebrew=data.get("hebrew"),
             events=data.get("events"),
             date=parsed_date,
+            _data=data,
+            _url=url,
+            _params=params
         )
+
+    @property
+    def raw(self) -> Dict[str, Any]:
+        return self._data or {}
+
+    @property
+    def query(self) -> Optional[str]:
+        if self._url and self._params:
+            from urllib.parse import urlencode
+            param_str = urlencode(self._params)
+            return f"{self._url}?{param_str}"
+        return None
