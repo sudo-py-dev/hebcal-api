@@ -251,7 +251,8 @@ class Calendar:
         elif start and end:
             return {"start": self._format_datetime(start), "end": self._format_datetime(end)}
         else:
-            raise ValueError("must provaid 'start+end' (str|date|datetime) or 'year' values")
+            raise ValueError("Provide either 'start' and 'end' (str, date, datetime) or a 'year'.")
+
 
     def _validate_location_params(
         self,
