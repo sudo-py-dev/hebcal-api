@@ -1,6 +1,6 @@
 __title__ = "hebcal-api"
 __description__ = "Hebrew Calendar Hebcal API client for Python"
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 __author__ = "sudo-py-dev"
 __author_email__ = "sudopydev@gmail.com"
 __license__ = "MIT"

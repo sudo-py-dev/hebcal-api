@@ -6,4 +6,4 @@ This package provides a Python client for the Hebcal Jewish Calendar API.
 For usage examples and documentation, see the README.md file.
 """
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"

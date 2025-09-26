@@ -331,7 +331,7 @@ If you encounter any issues or have questions:
 
 ## Changelog
 
-### Version 0.1.3
+### Version 0.1.4
 - Initial release
 - Complete API coverage for all Hebcal endpoints
 - Async and sync support
