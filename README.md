@@ -331,9 +331,10 @@ If you encounter any issues or have questions:
 
 ## Changelog
 
-### Version 0.1.0
+### Version 0.1.1
 - Initial release
 - Complete API coverage for all Hebcal endpoints
 - Async and sync support
+- Sync support with requests
 - Comprehensive type hints
 - Full documentation and examples
