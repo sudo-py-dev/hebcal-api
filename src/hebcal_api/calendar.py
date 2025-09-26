@@ -444,7 +444,7 @@ class Calendar:
         language: Optional[str] = None
     ) -> CalendarResponse:
         params = self._parse_params(
-            year, year_type, month, number_of_years, start, end,
+            start, end, year, year_type, month, number_of_years,
             geonameid, zip_code, latitude, longitude, timezone_id, city_name,
             israel_holidays_and_torah_readings,
             major_holidays, yom_tov_only, minor_holidays, rosh_chodesh, minor_fasts, special_shabbatot,
