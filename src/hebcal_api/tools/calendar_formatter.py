@@ -148,13 +148,14 @@ def format_calendar_events(response: CalendarResponse, include_hebrew: bool = Tr
     for date_key in sorted(events_by_date.keys()):
         date_events = events_by_date[date_key]
         date_str = date_events[0].date.strftime("%d/%m/%Y")
-        result.append(f"\n📅 *{date_str}*")
+        result.append(f"\n📅 <b>{date_str}</b>")
         
-        # Sort events by time (if available) or by type
+        # Sort events by type (prioritize Parashat) and then by time
         def get_event_sort_key(e):
-            if e.date:
-                return (e.date.time(), str(e.type))
-            return (datetime.max.time(), str(e.type))
+            # Assign priority to Parashat events (they come first)
+            type_priority = 0 if e.type == EventType.PARASHAT else 1
+            time_value = e.date.time() if e.date else datetime.max.time()
+            return (type_priority, time_value, str(e.type))
             
         sorted_events = sorted(date_events, key=get_event_sort_key)
         
