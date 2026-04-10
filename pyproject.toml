@@ -1,13 +1,9 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "hebcal-api"
-version = "0.1.6"
+version = "0.2.0"
 description = "Async client for Hebcal API"
 readme = { file = "README.md", content-type = "text/markdown" }
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [
   { name = "sudo-py-dev", email = "sudopydev@gmail.com" }
@@ -15,51 +11,60 @@ authors = [
 
 dependencies = [
     "httpx>=0.28.1",
-    "requests>=2.32.5",
-
+    "pydantic>=2.7.0",
+    "loguru>=0.7.2",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.0.0",
-    "pytest-asyncio>=0.21.0",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
     "pytest-cov>=4.0.0",
+    "ruff>=0.3.0",
+    "pyright>=1.1.300",
 ]
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.black]
-line-length = 88
-target-version = ['py39']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
-'''
+[tool.hatch.build.targets.wheel]
+packages = ["src/hebcal_api"]
 
-[tool.isort]
-profile = "black"
-multi_line_output = 3
-line_length = 88
-known_first_party = ["hebcal_api"]
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E", "F",   # pyflakes + pycodestyle
+    "I",        # isort
+    "N",        # pep8-naming
+    "UP",       # pyupgrade
+    "B",        # flake8-bugbear
+    "SIM",      # simplify
+    "TCH",      # type-checking imports
+    "ANN",      # annotations (enforce type hints)
+    "RUF",      # ruff-specific
+]
+
+[tool.ruff.lint.per-file-ignores]
+"test/**" = ["ANN", "S", "RUF001"]  # relax annotations + security + ambiguous chars in tests
+
+[tool.pyright]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+venvPath = "."
+venv = ".venv"
 
 [tool.pytest.ini_options]
 testpaths = ["test"]
-python_files = ["test_*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-addopts = "-v --tb=short"
 asyncio_mode = "auto"
+addopts = "--tb=short -q"
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/test/*"]
 
 [project.urls]
 Homepage = "https://github.com/sudo-py-dev/hebcal-api"

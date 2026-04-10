@@ -1,86 +1,69 @@
 """
-Helper functions for easier access to common Hebcal API queries
+Quick-access helper functions for common Hebcal API operations.
 """
 
-from typing import Optional, Dict, Any, Union
 from datetime import date, datetime
-from .calendar import Calendar
-from .tools.types import CalendarResponse
+
+from .calendar import fetch_calendar
+from .models import CalendarRequest
+from .utils.types import CalendarResponse
 
 
-def get_holidays(
-    year: int,
-    location: Optional[str] = None,
-    major_only: bool = False
+def fetch_holidays(
+    year: int, location: str | None = None, major_only: bool = False
 ) -> CalendarResponse:
     """
-    Get Jewish holidays for a specific year.
+    Get holidays for a given year.
 
     Args:
-        year: Gregorian year
-        location: City name or geonameid
-        major_only: If True, only return major holidays
-
-    Example:
-        holidays = get_holidays(2024, "New York")
+        year: The Gregorian or Hebrew year (e.g. 2024 or 5784).
+        location: Optional city name.
+        major_only: If True, only fetch major holidays.
     """
-    calendar = Calendar()
-    params = {"year": year, "maj": "on"}
-
-    if major_only:
-        params["min"] = "off"
-        params["mf"] = "off"
-
-    if location:
-        params["city"] = location
-
-    return calendar._get_calendar_sync(params)
+    req = CalendarRequest(
+        year=year,
+        city=location,
+        maj=major_only,
+    )
+    return fetch_calendar(req)
 
 
-def get_shabbat_times(
-    start_date: Union[str, date, datetime],
-    end_date: Union[str, date, datetime],
+def fetch_shabbat_times(
+    start_date: str | date | datetime,
+    end_date: str | date | datetime,
     location: str,
-    candle_lighting: bool = True
+    candle_lighting: bool = True,
 ) -> CalendarResponse:
     """
-    Get Shabbat times for a date range.
+    Get Shabbat candle lighting and Havdalah times for a date range.
 
     Args:
-        start_date: Start date
-        end_date: End date
-        location: City name
-        candle_lighting: Include candle lighting times
-
-    Example:
-        shabbat = get_shabbat_times("2024-01-01", "2024-12-31", "Jerusalem")
+        start_date: Starting date (YYYY-MM-DD or date/datetime object).
+        end_date: Ending date.
+        location: City name for location-based times.
+        candle_lighting: If True, include candle lighting times.
     """
-    calendar = Calendar()
-    params = {
-        "start": calendar._format_datetime(start_date),
-        "end": calendar._format_datetime(end_date),
-        "city": location,
-        "c": "on" if candle_lighting else "off"
-    }
-
-    return calendar._get_calendar_sync(params)
+    req = CalendarRequest(
+        start=start_date,
+        end=end_date,
+        city=location,
+        c=candle_lighting,
+    )
+    return fetch_calendar(req)
 
 
-def get_daf_yomi(date: Optional[Union[str, date, datetime]] = None) -> CalendarResponse:
+def fetch_daf_yomi(dt: str | date | datetime | None = None) -> CalendarResponse:
     """
     Get Daf Yomi for a specific date or today.
 
     Args:
-        date: Date to get Daf Yomi for (defaults to today)
-
-    Example:
-        daf = get_daf_yomi("2024-01-15")
+        dt: Optional date to lookup. Defaults to today's date if None.
     """
-    calendar = Calendar()
-    params = {"F": "on"}
+    req = CalendarRequest(F=True)
+    if dt:
+        if isinstance(dt, (datetime, date)):
+            req.start = req.end = dt.strftime("%Y-%m-%d")
+        else:
+            req.start = req.end = dt
 
-    if date:
-        params["start"] = calendar._format_datetime(date)
-        params["end"] = calendar._format_datetime(date)
-
-    return calendar._get_calendar_sync(params)
+    return fetch_calendar(req)

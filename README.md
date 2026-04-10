@@ -1,23 +1,21 @@
 # Hebcal API Client
 
 [![PyPI version](https://badge.fury.io/py/hebcal-api.svg)](https://badge.fury.io/py/hebcal-api)
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/sudo-py-dev/hebcal-api/blob/main/LICENSE)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-A comprehensive, async-first Python client for the [Hebcal Jewish Calendar API](https://www.hebcal.com/home/195/jewish-calendar-rest-api). This library provides easy access to Jewish calendar events, Shabbat times, Torah readings, and more.
+A comprehensive, production-grade Python client for the [Hebcal Jewish Calendar API](https://www.hebcal.com/home/195/jewish-calendar-rest-api). Modernized with **Pydantic v2**, **httpx**, and **strict type safety**.
 
 ## Features
 
-- 🗓️ **Complete Calendar API** - Access all Jewish calendar events and holidays
-- 🕯️ **Shabbat Times** - Get candle lighting and Havdalah times for any location
-- 📖 **Torah Readings** - Retrieve weekly Torah portions and leyning information
-- ⏰ **Zmanim** - Calculate daily Jewish prayer times and halachic times
-- 🔄 **Date Conversion** - Convert between Hebrew and Gregorian dates
-- 💀 **Yahrzeit** - Calculate Hebrew death anniversaries
-- ⚡ **Async Support** - Full async/await support with httpx
-- 🔄 **Sync Support** - Synchronous API with requests
-- 📍 **Location Support** - Geonames, coordinates, ZIP codes, and city names
-- 🌍 **International** - Support for multiple languages and locations worldwide
+- 🗓️ **Functional API** - Clean, functional interface for all Hebcal endpoints.
+- ✅ **Pydantic Validation** - Type-safe request models with automatic parameter validation.
+- 🇮🇱 **Clean Hebrew Output** - Specialized formatters that prioritize clean, nikud-free Hebrew text.
+- 🕯️ **Advanced Shabbat & Zmanim** - Precise halachic times for any location worldwide.
+- 🌾 **Omer Support** - Full support for fetching and formatting the daily Omer count.
+- ⚡ **Async Native** - Built on `httpx` for high-performance asynchronous operations.
+- 📍 **Flattened Location Support** - Direct use of Geonames, coordinates, or city names.
 
 ## Installation
 
@@ -25,316 +23,154 @@ A comprehensive, async-first Python client for the [Hebcal Jewish Calendar API](
 pip install hebcal-api
 ```
 
-Or install from source:
+Or with `uv`:
 
 ```bash
-git clone https://github.com/sudo-py-dev/hebcal-api.git
-cd hebcal-api
-pip install -e .
+uv add hebcal-api
 ```
 
 ## Quick Start
 
 ### Basic Calendar Usage
+Get Jewish holidays and events for any location.
 
 ```python
-from hebcal_api import Calendar
+from hebcal_api import CalendarRequest, fetch_calendar
+from hebcal_api.utils.calendar_formatter import format_calendar_events
 
-# Create a calendar instance
-calendar = Calendar()
-
-# Get events for a specific date range
-events = calendar.get_events(
-    start="2024-01-01",
-    end="2024-01-31",
-    geonameid=281184  # Jerusalem
+# Create a request for Jerusalem
+request = CalendarRequest(
+    location="Jerusalem",
+    geonameid=281184,
+    maj=True,    # Major holidays
+    min=True     # Minor holidays
 )
 
-for event in events.items:
-    print(f"{event.date}: {event.title}")
+# Fetch data synchronously
+response = fetch_calendar(request)
+
+# Format for display (Always clean Hebrew by default)
+print(format_calendar_events(response))
 ```
 
 ### Shabbat Times
+Fetch candle lighting and Havdalah times.
 
 ```python
-from hebcal_api import Shabat
+from hebcal_api import ShabbatRequest, fetch_shabbat
 
-# Create a Shabbat instance
-shabat = Shabat()
-
-# Get Shabbat times for New York
-times = shabat.get_shabbat(
+request = ShabbatRequest(
     geonameid=5128581,  # New York City
-    candle_lighting=True,
-    leyning=True  # Include Torah reading
+    c=True,             # Candle lighting
+    s=True              # Shabbat info
 )
 
-print(f"Candle lighting: {times.items[0].candle_lighting}")
-print(f"Havdalah: {times.items[0].havdalah}")
-print(f"Parasha: {times.items[0].parasha}")
+response = fetch_shabbat(request)
+
+for event in response.items:
+    print(f"{event.title}: {event.date}")
+```
+
+### Omer Count Today
+Easily track the daily Omer count.
+
+```python
+from hebcal_api import CalendarRequest, fetch_calendar
+
+request = CalendarRequest(o=True)  # Enable Omer count
+response = fetch_calendar(request)
+
+# Find the Omer event
+omer_event = next((i for i in response.items if i.type == "omer"), None)
+if omer_event:
+    print(f"Today is: {omer_event.title}")
 ```
 
 ### Async Usage
+Full async support for integration into modern web frameworks.
 
 ```python
 import asyncio
-from hebcal_api import Calendar
+from hebcal_api import CalendarRequest, fetch_calendar_async
 
 async def main():
-    calendar = Calendar()
+    request = CalendarRequest(geonameid=281184)
+    response = await fetch_calendar_async(request)
+    
+    for event in response.items:
+        print(f"{event.title} - {event.hebrew}")
 
-    # Get events asynchronously
-    events = await calendar.get_events_async(
-        year=2024,
-        major_holidays=True,
-        geonameid=281184
-    )
-
-    for event in events.items:
-        print(f"{event.date}: {event.title}")
-
-# Run the async function
 asyncio.run(main())
 ```
 
 ## API Reference
 
-### Calendar Class
+### Functional Interface
+The library provides high-level `fetch_*` functions for both sync and async execution:
 
-The main class for accessing Jewish calendar events and holidays.
+| Endpoint | Sync Function | Async Function |
+| :--- | :--- | :--- |
+| `/hebcal` | `fetch_calendar` | `fetch_calendar_async` |
+| `/shabbat` | `fetch_shabbat` | `fetch_shabbat_async` |
+| `/zmanim` | `fetch_zmanim` | `fetch_zmanim_async` |
+| `/converter` | `fetch_converter` | `fetch_converter_async` |
+| `/yahrzeit` | `fetch_yahrzeit` | `fetch_yahrzeit_async` |
+| `/leyning` | `fetch_leyning` | `fetch_leyning_async` |
+
+### Unified Client
+For custom network configuration, use the `HebcalClient`:
 
 ```python
-from hebcal_api import Calendar
+from hebcal_api import HebcalClient
 
-calendar = Calendar()
-
-# Get events with various options
-events = calendar.get_events(
-    # Date parameters
-    start="2024-01-01",           # Start date (YYYY-MM-DD)
-    end="2024-12-31",            # End date (YYYY-MM-DD)
-    year=2024,                   # Year (Gregorian or Hebrew)
-    month=1,                     # Month (1-12 or 'x' for all)
-
-    # Location (choose one)
-    geonameid=281184,            # Geonames.org ID
-    zip_code="10001",            # US ZIP code
-    latitude=40.7128,            # Latitude
-    longitude=-74.0060,          # Longitude
-    city_name="New York",        # City name
-
-    # Event types
-    major_holidays=True,         # Major Jewish holidays
-    minor_holidays=True,         # Minor holidays
-    special_shabbatot=True,      # Special Shabbatot
-    weekly_torah_portion=True,   # Parashat Hashavua
-    candle_lighting_times=True,  # Candle lighting
-    daf_yomi=True,               # Daily Talmud study
-
-    # Other options
-    israel_holidays_and_torah_readings=True,
-    language="en"                # Language code
+# Configure custom timeout or headers
+response = HebcalClient.execute(
+    endpoint=Endpoint.CALENDAR,
+    request=request,
+    response_model=CalendarResponse,
+    timeout=30
 )
 ```
 
-### Shabbat Class
+## Error Handling
 
-Get Shabbat times and Torah readings for any location.
+The library uses a hierarchy of specific exceptions:
 
-```python
-from hebcal_api import Shabat
+- `HebcalError`: Base exception for all library errors.
+- `HebcalNetworkError`: Raised for HTTP connection or status code failures.
+- `HebcalValidationError`: Raised when request parameters are invalid (e.g., missing location).
+- `HebcalParseError`: Raised when the API response cannot be parsed into the expected models.
 
-shabat = Shabat()
+## Formatting Utilities
+Located in `hebcal_api.utils.calendar_formatter`, these helper functions turn raw data into professional messages.
 
-times = shabat.get_shabbat(
-    # Location (required)
-    geonameid=5128581,           # New York City
-    # latitude=40.7128,          # Alternative: coordinates
-    # longitude=-74.0060,
-
-    # Times
-    candle_lighting=True,        # Include candle lighting
-    havdalah_at_nightfall=True,  # Use nightfall for Havdalah
-
-    # Torah portion
-    leyning=True,                # Include weekly reading
-
-    # Timing adjustments
-    candle_lighting_minutes_before_sunset=18,
-    havdalah_minutes_after_sunset=42,
-
-    # Language
-    language="en"
-)
-```
-
-### Zmanim Class
-
-Calculate daily Jewish prayer times and halachic times.
-
-```python
-from hebcal_api import Zmanim
-
-zmanim = Zmanim()
-
-times = zmanim.get_zmanim(
-    date="2024-01-15",
-    geonameid=281184,            # Jerusalem
-    # Or use coordinates:
-    # latitude=31.7683,
-    # longitude=35.2137,
-    # timezone_id="Asia/Jerusalem"
-)
-```
-
-### Date Converter
-
-Convert between Hebrew and Gregorian dates.
-
-```python
-from hebcal_api import Converter
-
-# Hebrew to Gregorian
-gregorian = Converter.hdate_to_gdate(5784, 1, 15)  # 15 Shevat 5784
-print(f"Hebrew date 15/1/5784 = {gregorian}")
-
-# Gregorian to Hebrew
-hebrew = Converter.gdate_to_hdate(2024, 1, 15)     # January 15, 2024
-print(f"Gregorian date 2024-01-15 = {hebrew}")
-```
-
-### Yahrzeit
-
-Calculate Hebrew death anniversaries.
-
-```python
-from hebcal_api import Yahrzeit
-
-yahrzeit = Yahrzeit()
-
-# Calculate Yahrzeit for a death date
-anniversaries = yahrzeit.get_yahrzeit(
-    death_date="2020-01-15",     # Gregorian death date
-    year=2024,                   # Year to calculate for
-    geonameid=5128581           # Location for Hebrew date
-)
-```
-
-## Advanced Usage
-
-### Custom Parameters
-
-All methods accept additional parameters supported by the Hebcal API:
-
-```python
-from hebcal_api import Calendar
-
-calendar = Calendar()
-
-# Pass any Hebcal API parameter
-events = calendar.get_events(
-    year=2024,
-    major_holidays=True,
-    geonameid=281184,
-    extra_params={
-        "maj": "on",           # Major holidays
-        "min": "on",           # Minor holidays
-        "mod": "on",           # Modern holidays
-        "i": "on",             # Israel-specific holidays
-        "lg": "h"              # Hebrew language
-    }
-)
-```
-
-### Error Handling
-
-```python
-from hebcal_api import Calendar
-from hebcal_api.tools.exception import FetchError
-
-calendar = Calendar()
-
-try:
-    events = calendar.get_events(year=2024, geonameid=281184)
-    print(f"Found {len(events.items)} events")
-except FetchError as e:
-    print(f"API Error: {e}")
-except ValueError as e:
-    print(f"Validation Error: {e}")
-```
+- `format_calendar_events(response)`: Returns a beautiful, multi-line string of events.
+- `remove_hebrew_nikud(text)`: Manually strip diacritics from any Hebrew string.
 
 ## Development
 
-### Setup Development Environment
+Set up the project using `uv`:
 
 ```bash
 git clone https://github.com/sudo-py-dev/hebcal-api.git
 cd hebcal-api
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -e ".[dev]"
+uv sync
 ```
 
 ### Code Quality
-
-This project uses several tools to maintain code quality:
-
-```bash
-# Format code
-black src/
-isort src/
-
-# Lint code
-ruff check src/
-
-# Type checking (if mypy is installed)
-mypy src/
-```
-
-### Running Tests
+We enforce strict linting and type checking:
 
 ```bash
-# Run the test suite
-python -m pytest
-
-# Run with coverage
-python -m pytest --cov=hebcal_api
+uv run ruff check      # Linting
+uv run ruff format     # Formatting
+uv run pyright src/    # Type safety
+uv run pytest          # Testing
 ```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-### Development Guidelines
-
-1. Follow PEP 8 style guidelines
-2. Add type hints for all public functions
-3. Include docstrings for all public classes and methods
-4. Add tests for new functionality
-5. Update documentation as needed
 
 ## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## API Documentation
-
-This library is a wrapper around the [Hebcal Jewish Calendar REST API](https://www.hebcal.com/home/195/jewish-calendar-rest-api). For complete API documentation, visit the official Hebcal API documentation.
+MIT License. See [LICENSE](LICENSE) for details.
 
 ## Support
-
-If you encounter any issues or have questions:
-
 - 📧 Email: sudopydev@gmail.com
 - 🐛 [GitHub Issues](https://github.com/sudo-py-dev/hebcal-api/issues)
-- 📖 [API Documentation](https://www.hebcal.com/home/195/jewish-calendar-rest-api)
-
-## Changelog
-
-### Version 0.1.6
-- Initial release
-- Complete API coverage for all Hebcal endpoints
-- Async and sync support
-- Sync support with requests
-- Comprehensive type hints
-- Full documentation and examples
+- 📖 [Official API Documentation](https://www.hebcal.com/home/195/jewish-calendar-rest-api)

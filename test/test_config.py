@@ -1,4 +1,4 @@
-from src.hebcal_api.config import BASE_URL, DEFAULT_PARAMS
+from hebcal_api.config import BASE_URL, DEFAULT_PARAMS
 
 
 class TestConfig:
@@ -14,7 +14,7 @@ class TestConfig:
             "v": "1",
             "cfg": "json",
         }
-        assert DEFAULT_PARAMS == expected_params
+        assert expected_params == DEFAULT_PARAMS
 
     def test_default_params_structure(self):
         """Test DEFAULT_PARAMS has required structure."""
